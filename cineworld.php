@@ -4,6 +4,7 @@ class Cineworld {
 	var $baseUrl = "http://www.cineworld.com/api/quickbook";
 	var $format = 'json';
 	var $key;
+	var $curl = false;
 	
 	function __construct($key) {
 		$this->key = $key;
@@ -79,25 +80,17 @@ class Cineworld {
 			$url = $url.'?'.http_build_query($params);
 		}
 		
-		echo "\n$url\n";
-
-		$response = file_get_contents($url);
-		$response = json_decode($response, true);
-		
-		return $response;
-
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL,$url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
-		$response = curl_exec($ch);
-		curl_close($ch);
-		
-//		var_dump($response);
-
-		if ($this->format == 'json') {
-			$response = json_decode($response, true);
+		if ($this->curl) {
+			$ch = curl_init();
+			curl_setopt($ch, CURLOPT_URL,$url);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+			$response = curl_exec($ch);
+			curl_close($ch);
+		} else {
+			$response = file_get_contents($url);
 		}
 
+		$response = json_decode($response, true);
 		return $response;
 	}
 
